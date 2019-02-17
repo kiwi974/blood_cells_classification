@@ -13,7 +13,7 @@ import sys
 class Trainer:
 
 
-    def __init__(self, input_placeholder, output_placeholder, train_size, test_size, logits, iterations,  train_data, train_labels, test_data, test_labels):
+    def __init__(self, input_placeholder, output_placeholder, train_size, test_size, logits, iterations, should_drop,  train_data, train_labels, test_data, test_labels):
         """
         Build a trainer 
         Parameters : 
@@ -33,6 +33,7 @@ class Trainer:
         self.test_size = test_size
         self.output = logits
         self.iterations = iterations
+        self.should_drop = should_drop
         self.train_data = train_data
         self.train_labels = train_labels
         self.test_data = test_data
@@ -76,7 +77,8 @@ class Trainer:
                 for i in range(self.iterations+1):
                         batch_indexes = np.random.randint(4*self.train_size,size=batch_size)
                         _, loss_val = sess.run([train_op, loss], feed_dict={self.input_placeholder: self.train_data[batch_indexes], 
-                                                                            self.output_placeholder: self.train_labels[batch_indexes]})
+                                                                            self.output_placeholder: self.train_labels[batch_indexes],
+                                                                            self.should_drop : True})
                         losses.append(loss_val)
                         if i % 50 == 0:       
                                 #print("ITERATION : {0} ; Loss: {1}".format(i,loss_val))
@@ -87,11 +89,11 @@ class Trainer:
                                 sys.stdout.flush()
                                 accuracies_it.append(i)
                                 # Accuracy on training set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data})
+                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data, self.should_drop : False})
                                 accuracy = accuracy_score(self.train_labels, acc_aux)
                                 train_accuracies.append(accuracy)
                                 # Accuracy on testing set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data})
+                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data, self.should_drop : False})
                                 accuracy = accuracy_score(self.test_labels, acc_aux)
                                 test_accuracies.append(accuracy)
 
@@ -99,7 +101,7 @@ class Trainer:
                 ##### Testing #####
 
                 # Run predictions against the full test set.
-                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data})[0]
+                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, self.should_drop : False})[0]
 
                 # Calculate correct matches 
                 match_count = sum([int(y == y_) for y, y_ in zip(self.test_labels, predicted)])

@@ -11,11 +11,11 @@ from sklearn.metrics import accuracy_score
 
 train_size = 700
 dl = DataLoader.DataLoader(train_size)
-train_data, train_labels = dl.data('training')
+train_data, train_labels = dl.preprocess('training')
 
 test_size = 300
 dl_test = DataLoader.DataLoader(test_size)
-test_data, test_labels = dl_test.data('testing')
+test_data, test_labels = dl_test.preprocess('testing')
 
 learning_rate = 0.0002
 batch_size = 50
@@ -29,13 +29,14 @@ print('train_labes has shape of : ', train_labels.shape)
 
 x = tf.placeholder(dtype = tf.float32, shape = [None, 60, 80])
 y = tf.placeholder(dtype = tf.int32, shape = [None])
+should_drop = tf.placeholder(tf.bool)
 
-mb = ModelBuilder.ModelBuilder(60,80,4,x)
+mb = ModelBuilder.ModelBuilder(60,80,4,x, should_drop)
 
 with tf.variable_scope('model') as scope: 
         logits = mb.networkBuilder()
 
-trainer = Trainer.Trainer(x,y,train_size, test_size, logits, nb_iterations, train_data, train_labels, test_data, test_labels)
+trainer = Trainer.Trainer(x,y,train_size, test_size, logits, nb_iterations, should_drop, train_data, train_labels, test_data, test_labels)
 
 losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size)
 

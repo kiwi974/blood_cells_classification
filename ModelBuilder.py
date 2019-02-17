@@ -9,7 +9,7 @@ import tensorflow as tf
 class ModelBuilder:
 
 
-    def __init__(self, input_height, input_width, classes, input_data):
+    def __init__(self, input_height, input_width, classes, input_data, mode=True):
         """
         Build a ModelBuilder. 
         Parameters : 
@@ -17,11 +17,13 @@ class ModelBuilder:
             - input_width : width of the input images 
             - classes : number of classes of the model 
             - input_data : the data fedding the model (a placeholder in practise)
+            - mode : default is True for training, otherwise it is False for inference
         """
         self.input_height = input_height
         self.input_width = input_width
         self.classes = classes
         self.input_data = input_data
+        self.mode = mode 
 
 
 
@@ -78,14 +80,14 @@ class ModelBuilder:
         with tf.variable_scope('dense_1'):
             # Dense Layer 1
             dense1 = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
-            
+        
+        with tf.variable_scope('dropout_1'):
             # Dropout Layer 1
-            #dropout1 = tf.layers.dropout(
-            #    inputs=dense1, rate=0.4, training= (mode==tf.estimator.ModeKeys.TRAIN)) 
+            dropout1 = tf.layers.dropout(inputs=dense1, rate=0.4, training=self.mode) 
 
         with tf.variable_scope('dense_2'):
             # Dense Layer 2
-            dense2 = tf.layers.dense(inputs=dense1, units=1024, activation=tf.nn.relu)
+            dense2 = tf.layers.dense(inputs=dropout1, units=1024, activation=tf.nn.relu)
             
             # Dropout Layer 2
             #dropout2 = tf.layers.dropout(
