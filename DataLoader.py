@@ -75,7 +75,7 @@ class DataLoader:
         else:
             images, labels = self.load_data(DataLoader.test_data_directory, DataLoader.string_labels)
 
-        resized_images = [skimage.transform.resize(image, (60, 80)) for image in images] 
+        resized_images = [skimage.transform.resize(image, (60, 80), mode='constant') for image in images] 
         images = np.array(resized_images)
         images = rgb2gray(images)
 

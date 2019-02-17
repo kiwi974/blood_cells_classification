@@ -9,7 +9,7 @@ import tensorflow as tf
 class ModelBuilder:
 
 
-    def __init__(self, input_height, input_width, classes, input_data, mode=True):
+    def __init__(self, input_height, input_width, classes, input_data, dropout1_rate, should_drop=True):
         """
         Build a ModelBuilder. 
         Parameters : 
@@ -17,13 +17,15 @@ class ModelBuilder:
             - input_width : width of the input images 
             - classes : number of classes of the model 
             - input_data : the data fedding the model (a placeholder in practise)
+            - dropout1_rate : dropout rate of the first dropout layer
             - mode : default is True for training, otherwise it is False for inference
         """
         self.input_height = input_height
         self.input_width = input_width
         self.classes = classes
         self.input_data = input_data
-        self.mode = mode 
+        self.should_drop = should_drop
+        self.dropout1_rate = dropout1_rate
 
 
 
@@ -31,7 +33,7 @@ class ModelBuilder:
 
     def networkBuilder(self):
         """     
-        Build the architecture of the convolutional network. 
+        Build the architecture of the convolutional network.            
         """
         with tf.variable_scope('input_layer'):
             # Build the input layer, with a dynamically computed batch size
@@ -83,7 +85,7 @@ class ModelBuilder:
         
         with tf.variable_scope('dropout_1'):
             # Dropout Layer 1
-            dropout1 = tf.layers.dropout(inputs=dense1, rate=0.4, training=self.mode) 
+            dropout1 = tf.layers.dropout(inputs=dense1, rate=self.dropout1_rate, training=self.should_drop) 
 
         with tf.variable_scope('dense_2'):
             # Dense Layer 2

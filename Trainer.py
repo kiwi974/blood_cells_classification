@@ -13,7 +13,7 @@ import sys
 class Trainer:
 
 
-    def __init__(self, input_placeholder, output_placeholder, train_size, test_size, logits, iterations, should_drop,  train_data, train_labels, test_data, test_labels):
+    def __init__(self, input_placeholder, output_placeholder, train_size, test_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels):
         """
         Build a trainer 
         Parameters : 
@@ -22,7 +22,8 @@ class Trainer:
             - train_size : number of training samples per class 
             - test_size : number of testing samples per class 
             - output : output tensor of the network 
-            - iterations : maximum number of iterations done for training 
+            - should_drop : boolean the apply or not dropout layer 1 (depending on training or inference mode)
+            - dropout_rate1_placeholder : dropout rate of the first dropout layer
             - train_data, train_labels : training samples (features and labels)
             - test_data, test_labels : testing samples (features and labels) 
         """
@@ -32,8 +33,8 @@ class Trainer:
         self.train_size = train_size
         self.test_size = test_size
         self.output = logits
-        self.iterations = iterations
         self.should_drop = should_drop
+        self.dropout_rate1_placeholder = dropout_rate1_placeholder
         self.train_data = train_data
         self.train_labels = train_labels
         self.test_data = test_data
@@ -42,13 +43,15 @@ class Trainer:
 
 
     
-    def train(self, learning_rate, batch_size):
+    def train(self, learning_rate, batch_size, max_iterations, do_rate1):
         """
         Train the model. Optimizer is Adam, loss is the sparse softmax cross entropy with logits, et predictions are 
         checked with argmax on logits. 
         Parameters : 
             - learning_rate : learning rate used by the optimizer 
             - batch_size : size of the training batches 
+            - max_iterations : maximum number of iterations done for training 
+            - do_rate1 : dropout rate of the first dropout layer
         """
 
         # Define a loss function
@@ -74,26 +77,31 @@ class Trainer:
 
                 sess.run(tf.global_variables_initializer())
 
-                for i in range(self.iterations+1):
+                for i in range(max_iterations+1):
                         batch_indexes = np.random.randint(4*self.train_size,size=batch_size)
                         _, loss_val = sess.run([train_op, loss], feed_dict={self.input_placeholder: self.train_data[batch_indexes], 
                                                                             self.output_placeholder: self.train_labels[batch_indexes],
-                                                                            self.should_drop : True})
+                                                                            self.should_drop : True,
+                                                                            self.dropout_rate1_placeholder : do_rate1})
                         losses.append(loss_val)
                         if i % 50 == 0:       
                                 #print("ITERATION : {0} ; Loss: {1}".format(i,loss_val))
-                                arrow_length = int(10*(i/self.iterations))
-                                progress_percent = (1000*(i/self.iterations))/10
+                                arrow_length = int(10*(i/max_iterations))
+                                progress_percent = (int(1000*(i/max_iterations)))/10
                                 sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} [{4}>{5}{6}%]'.format(1, i, 
-                                                 self.iterations, loss_val, '='*arrow_length,' '*(9-arrow_length), progress_percent))
+                                                 max_iterations, loss_val, '='*arrow_length,' '*(9-arrow_length), progress_percent))
                                 sys.stdout.flush()
                                 accuracies_it.append(i)
                                 # Accuracy on training set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data, self.should_drop : False})
+                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data, 
+                                                                       self.should_drop : False,
+                                                                       self.dropout_rate1_placeholder : do_rate1})
                                 accuracy = accuracy_score(self.train_labels, acc_aux)
                                 train_accuracies.append(accuracy)
                                 # Accuracy on testing set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data, self.should_drop : False})
+                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data, 
+                                                                       self.should_drop : False,
+                                                                       self.dropout_rate1_placeholder : do_rate1})
                                 accuracy = accuracy_score(self.test_labels, acc_aux)
                                 test_accuracies.append(accuracy)
 
@@ -101,7 +109,7 @@ class Trainer:
                 ##### Testing #####
 
                 # Run predictions against the full test set.
-                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, self.should_drop : False})[0]
+                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, self.should_drop : False, self.dropout_rate1_placeholder : do_rate1})[0]
 
                 # Calculate correct matches 
                 match_count = sum([int(y == y_) for y, y_ in zip(self.test_labels, predicted)])

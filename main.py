@@ -19,10 +19,8 @@ test_data, test_labels = dl_test.preprocess('testing')
 
 learning_rate = 0.0002
 batch_size = 50
-nb_iterations = 1000
-
-print('train_data has shape of : ', train_data.shape)
-print('train_labes has shape of : ', train_labels.shape)
+max_iterations = 3000
+dropout_rate1 = 0.7
 
 
 # Create the model 
@@ -30,15 +28,16 @@ print('train_labes has shape of : ', train_labels.shape)
 x = tf.placeholder(dtype = tf.float32, shape = [None, 60, 80])
 y = tf.placeholder(dtype = tf.int32, shape = [None])
 should_drop = tf.placeholder(tf.bool)
+dropout_rate1_placeholder = tf.placeholder(tf.float32, shape=(), name='dropout1_rate')
 
-mb = ModelBuilder.ModelBuilder(60,80,4,x, should_drop)
+mb = ModelBuilder.ModelBuilder(60,80,4,x, dropout_rate1_placeholder, should_drop)
 
 with tf.variable_scope('model') as scope: 
         logits = mb.networkBuilder()
 
-trainer = Trainer.Trainer(x,y,train_size, test_size, logits, nb_iterations, should_drop, train_data, train_labels, test_data, test_labels)
+trainer = Trainer.Trainer(x,y,train_size, test_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
 
-losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size)
+losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1)
 
 
 
@@ -46,7 +45,7 @@ losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.tra
 print("\nAccuracy: {:.3f}".format(accuracy))
 
 fig,ax = plt.subplots(figsize=(15,15))
-ax.plot(np.arange(nb_iterations+1),losses)
+ax.plot(np.arange(max_iterations+1),losses)
 ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
 ax.set_xlabel('Iterations',fontsize=22)
 ax.set_ylabel('Cross Entropy Loss', fontsize=22)
