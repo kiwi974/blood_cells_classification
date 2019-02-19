@@ -17,10 +17,6 @@ test_size = 300
 dl_test = DataLoader.DataLoader(test_size)
 test_data, test_labels = dl_test.preprocess('testing')
 
-learning_rate = 0.0002
-batch_size = 50
-max_iterations = 3000
-dropout_rate1 = 0.7
 
 
 # Create the model 
@@ -37,27 +33,93 @@ with tf.variable_scope('model') as scope:
 
 trainer = Trainer.Trainer(x,y,train_size, test_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
 
+
+learning_rate = 0.000092
+batch_size = 100
+max_iterations = 15000
+dropout_rate1 = 0.7
+
 losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1)
 
 
+# Influence of the rate of the first dropout layer 
+do1_exp = False
+if (do1_exp):
+    dropout_rate1_range = [.1,.2,.3,.4,.5,.6,.7,.8,.9]
+    dropout_rate1_accuracies = []
+    for (i,do_rate1) in enumerate(dropout_rate1_range):
+        print('\n\n\nTRAINING n°{0} :\n'.format(i))
+        _, accuracy, _, _, _ = trainer.train(learning_rate, batch_size, max_iterations, do_rate1)
+        dropout_rate1_accuracies.append(accuracy)
 
-# Print the accuracy
-print("\nAccuracy: {:.3f}".format(accuracy))
+    fig,ax = plt.subplots(figsize=(15,15))
+    ax.plot(dropout_rate1_range,dropout_rate1_accuracies)
+    ax.set_title('Blood Cells Recognition Accuracy (dropout rate 1)', fontsize=26)
+    ax.set_xlabel('Dropout Rate 1',fontsize=22)
+    ax.set_ylabel('Inference Accuracy', fontsize=22)
+    fig.savefig('dropout_rate1.png', bbox_inches='tight')
+    plt.show()
+    print('\n')
 
-fig,ax = plt.subplots(figsize=(15,15))
-ax.plot(np.arange(max_iterations+1),losses)
-ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
-ax.set_xlabel('Iterations',fontsize=22)
-ax.set_ylabel('Cross Entropy Loss', fontsize=22)
-fig.savefig('loss.png', bbox_inches='tight')
-plt.show()
 
-fig,ax = plt.subplots(figsize=(15,15))
-ax.plot(accuracies_it, train_accuracies, label = 'Accuracy on training set')
-ax.plot(accuracies_it, test_accuracies, label = 'Accuracy on testing set')
-ax.set_title('Blood Cells Recognition Accuracy (batch size : {0}, lr = {1})'.format(batch_size, learning_rate), fontsize=26)
-ax.set_xlabel('Iterations',fontsize=22)
-ax.set_ylabel('Accuracy', fontsize=22)
-ax.legend()
-fig.savefig('accuracy.png', bbox_inches='tight')
-plt.show()
+
+# Influence of the learning rate 
+lr_exp = False
+if (lr_exp):
+    lr_range = [.000091,.000092,.000093,.000094,.000095,.000096,.000097,.000098,.000099]
+    lr_accuracies = []
+    for (i,lr) in enumerate(lr_range):
+        print('\n\n\nTRAINING n°{0} :\n'.format(i+1))
+        _, accuracy, _, _, _ = trainer.train(lr, batch_size, max_iterations, dropout_rate1)
+        lr_accuracies.append(accuracy)
+
+    fig,ax = plt.subplots(figsize=(15,15))
+    ax.plot(lr_range,lr_accuracies)
+    ax.set_title('Blood Cells Recognition Accuracy (learning rate)', fontsize=26)
+    ax.set_xlabel('Learning Rate',fontsize=22)
+    ax.set_ylabel('Inference Accuracy', fontsize=22)
+    fig.savefig('lr2.png', bbox_inches='tight')
+    plt.show()
+    print('\n')
+
+
+# Influence of the learning rate 
+bs_exp = False
+if (bs_exp):
+    bs_range = [5, 20, 50, 100, 200]
+    bs_accuracies = []
+    for (i,bs) in enumerate(bs_range):
+        print('\n\n\nTRAINING n°{0} :\n'.format(i+1))
+        _, accuracy, _, _, _ = trainer.train(learning_rate, bs, max_iterations, dropout_rate1)
+        bs_accuracies.append(accuracy)
+
+    fig,ax = plt.subplots(figsize=(15,15))
+    ax.plot(bs_range,bs_accuracies)
+    ax.set_title('Blood Cells Recognition Accuracy (batch_size)', fontsize=26)
+    ax.set_xlabel('Batch Size',fontsize=22)
+    ax.set_ylabel('Inference Accuracy', fontsize=22)
+    fig.savefig('bs.png', bbox_inches='tight')
+    plt.show()
+    print('\n')
+
+
+if (True):
+    print("\nAccuracy: {:.3f}".format(accuracy))
+
+    fig,ax = plt.subplots(figsize=(15,15))
+    ax.plot(np.arange(max_iterations+1),losses)
+    ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
+    ax.set_xlabel('Iterations',fontsize=22)
+    ax.set_ylabel('Cross Entropy Loss', fontsize=22)
+    fig.savefig('loss.png', bbox_inches='tight')
+    plt.show()
+
+    fig,ax = plt.subplots(figsize=(15,15))
+    ax.plot(accuracies_it, train_accuracies, label = 'Accuracy on training set')
+    ax.plot(accuracies_it, test_accuracies, label = 'Accuracy on testing set')
+    ax.set_title('Blood Cells Recognition Accuracy (batch size : {0}, lr = {1})'.format(batch_size, learning_rate), fontsize=26)
+    ax.set_xlabel('Iterations',fontsize=22)
+    ax.set_ylabel('Accuracy', fontsize=22)
+    ax.legend()
+    fig.savefig('accuracy.png', bbox_inches='tight')
+    plt.show()

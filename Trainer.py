@@ -55,15 +55,15 @@ class Trainer:
         """
 
         # Define a loss function
-        with tf.variable_scope('loss'):
+        with tf.variable_scope('loss', reuse=tf.AUTO_REUSE):
                 loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = self.output_placeholder, 
                                                                                 logits = self.output))
         # Define an optimizer 
-        with tf.variable_scope('train_op'):
+        with tf.variable_scope('train_op', reuse=tf.AUTO_REUSE):
                 train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
         # Convert logits to label indexes
-        with tf.variable_scope('eval'):
+        with tf.variable_scope('eval', reuse=tf.AUTO_REUSE):
                 correct_pred = tf.argmax(self.output, axis=1)
 
         # Record the different training and testing figures 
@@ -81,7 +81,7 @@ class Trainer:
                         batch_indexes = np.random.randint(4*self.train_size,size=batch_size)
                         _, loss_val = sess.run([train_op, loss], feed_dict={self.input_placeholder: self.train_data[batch_indexes], 
                                                                             self.output_placeholder: self.train_labels[batch_indexes],
-                                                                            self.should_drop : True,
+                                                                            self.should_drop : False,
                                                                             self.dropout_rate1_placeholder : do_rate1})
                         losses.append(loss_val)
                         if i % 50 == 0:       
@@ -89,7 +89,7 @@ class Trainer:
                                 arrow_length = int(10*(i/max_iterations))
                                 progress_percent = (int(1000*(i/max_iterations)))/10
                                 sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} [{4}>{5}{6}%]'.format(1, i, 
-                                                 max_iterations, loss_val, '='*arrow_length,' '*(9-arrow_length), progress_percent))
+                                                 max_iterations, '{0:.6f}'.format(loss_val), '='*arrow_length,' '*(9-arrow_length), progress_percent))
                                 sys.stdout.flush()
                                 accuracies_it.append(i)
                                 # Accuracy on training set 
@@ -109,7 +109,9 @@ class Trainer:
                 ##### Testing #####
 
                 # Run predictions against the full test set.
-                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, self.should_drop : False, self.dropout_rate1_placeholder : do_rate1})[0]
+                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, 
+                                                                self.should_drop : False, 
+                                                                 self.dropout_rate1_placeholder : do_rate1})[0]
 
                 # Calculate correct matches 
                 match_count = sum([int(y == y_) for y, y_ in zip(self.test_labels, predicted)])
