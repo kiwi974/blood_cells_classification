@@ -44,7 +44,7 @@ class ModelBuilder:
                         ###########################################
 
         with tf.variable_scope('conv_1', reuse=tf.AUTO_REUSE):
-            # Convolutional Layer 1 : apply 32 3x3 filters, with ReLU activation functions
+            # Convolutional Layer 1
             conv1 = tf.layers.conv2d(
                 inputs=input_layer,
                 filters=32,
@@ -66,7 +66,7 @@ class ModelBuilder:
                         ###########################################
 
         with tf.variable_scope('conv_2', reuse=tf.AUTO_REUSE):
-            # Convolutional Layer 2 : apply 64 3x3 filters
+            # Convolutional Layer 2
             conv2 = tf.layers.conv2d(
                 inputs=norm1,
                 filters=32,
@@ -88,10 +88,10 @@ class ModelBuilder:
                         ###########################################
 
         with tf.variable_scope('conv_3', reuse=tf.AUTO_REUSE):
-            # Convolutional Layer 3 : apply 64 3x3 filters
+            # Convolutional Layer 3 
             conv3 = tf.layers.conv2d(
                 inputs=norm2,
-                filters=32,
+                filters=16,
                 kernel_size=[5,5],
                 padding="same",
                 activation=tf.nn.relu
@@ -105,13 +105,35 @@ class ModelBuilder:
             # Normalization Layer 3
             norm3 = tf.nn.local_response_normalization(input=tf.to_float(pool3))
 
+                        ###########################################
+                        ########## CONVOLUTIONAL LAYER 4 ##########
+                        ###########################################
+
+        with tf.variable_scope('conv_4', reuse=tf.AUTO_REUSE):
+            # Convolutional Layer 3 
+            conv4 = tf.layers.conv2d(
+                inputs=norm3,
+                filters=16,
+                kernel_size=[5,5],
+                padding="same",
+                activation=tf.nn.relu
+            )
+
+        with tf.variable_scope('pool_4', reuse=tf.AUTO_REUSE):
+            # Pooling Layer 3
+            pool4 = tf.layers.max_pooling2d(inputs=conv4, pool_size=[2, 2], strides=2)
+
+        with tf.variable_scope('norm_4', reuse=tf.AUTO_REUSE):
+            # Normalization Layer 3
+            norm4 = tf.nn.local_response_normalization(input=tf.to_float(pool4))
+
                         #############################
                         ########## FLATTEN ##########
                         #############################
 
         with tf.variable_scope('pool_flat', reuse=tf.AUTO_REUSE):
             # Entry Flatten Layer 
-            pool_flat = tf.reshape(pool3, [-1, 7 * 10 * 32]) 
+            pool_flat = tf.reshape(norm4, [-1, 3 * 5 * 16]) 
 
                         ##################################
                         ########## DENSE LAYERS ##########

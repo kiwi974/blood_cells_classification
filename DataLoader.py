@@ -14,10 +14,6 @@ import sys
 
 class DataLoader:
 
-    ROOT_PATH = "DATA/images"
-    train_data_directory = os.path.join(ROOT_PATH, "TRAIN")
-    test_data_directory = os.path.join(ROOT_PATH, "TEST")
-
     string_labels = {'NEUTROPHIL':0, 'MONOCYTE':1, 'EOSINOPHIL':2, 'LYMPHOCYTE':3}
 
 
@@ -30,53 +26,52 @@ class DataLoader:
         """
         self.class_contingent = class_contingent
 
-    
-    def load_data(self,data_directory, string_labels):
+
+    def fromPictToBinary(self,inputPath, outputPath):
         """
-        Load the data into memory. 
+        Record in a binary format all pictures in a directory designed by inputPath, and record them
+        in the directory designed by outputPath. All pictures are saved into the same binary file,
+        previously stored in a numpy array. 
         Parameters : 
-            - data_directory : directory containing all the pictures
-            - string_labels : dictionnary associated each string label to an int label 
-        Returns : 
-            - images : an array containing the loaded images 
-            - labels : an array containing the corresponding labels 
+            - inputPath : path to folder containing the images to load, process and store in a binary format.
+            - outputPath : path to the folder into which save the binary data.
         """
-        # Make a list of the subdirectories in the directory 'data_directory'
-        directories = [d for d in os.listdir(data_directory) 
-                    if os.path.isdir(os.path.join(data_directory, d))]
-        # Initialize the which will contain the labels and the data (images under ppm format)
+        # Make a list of the subdirectories in the directory designed by 'inputPath'
+        directories = [d for d in os.listdir(inputPath) 
+                    if os.path.isdir(os.path.join(inputPath, d))]
         labels = []
         images = []
+        data = np.empty(shape=(0,60,80))
+        classes = np.array([])
         for d in directories:
             print(d)
-            label_directory = os.path.join(data_directory, d)
+            label_directory = os.path.join(inputPath, d)
             file_names = [os.path.join(label_directory, f) 
                         for f in os.listdir(label_directory) 
                         if f.endswith(".jpeg")]
-            # Add all the images in the subdirectory d to the data, and keep the corresponding label 
+            # Add all the images in the subdirectory d to the data, and record the corresponding label 
             for (i,f) in enumerate(file_names):
                 images.append(skimage.data.imread(f))
-                labels.append(string_labels[d])
+                labels.append(DataLoader.string_labels[d])
                 if (i>=self.class_contingent):
                     break
-        return images, labels
+            # Resize and grayscale the images 
+            resized_images = [skimage.transform.resize(image, (60, 80), mode='constant') for image in images] 
+            images = np.array(resized_images)
 
-    
-    def preprocess(self, mode):
-        """
-            Preprocess the images, by rescaling and grayscaling. 
-            Parameters: 
-                - mode : 'training' or 'testing', according if we are loading training or testing data
-            Remark : 
-                the main reasons of the preprocessing is the reduce the memory consumption of the programm. 
-        """
-        if (mode == 'training'):
-            images, labels = self.load_data(DataLoader.train_data_directory, DataLoader.string_labels)
-        else:
-            images, labels = self.load_data(DataLoader.test_data_directory, DataLoader.string_labels)
+            # Convert images and labels into numpy arrays
+            images = rgb2gray(images)
+            labels = np.array(labels)
 
-        resized_images = [skimage.transform.resize(image, (60, 80), mode='constant') for image in images] 
-        images = np.array(resized_images)
-        images = rgb2gray(images)
+            # Concatenate data and free useless memory
+            data = np.concatenate((data, images))
+            classes = np.concatenate((classes, labels))
+            del images
+            del labels
+            images = []
+            labels = []
 
-        return images, np.array(labels)
+        # Record data and labels
+        np.save(os.path.join(outputPath,'data.npy'), data, allow_pickle=False, fix_imports=False)
+        np.save(os.path.join(outputPath,'labels.npy'), classes, allow_pickle=False, fix_imports=False)
+         

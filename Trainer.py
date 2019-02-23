@@ -13,14 +13,13 @@ import sys
 class Trainer:
 
 
-    def __init__(self, input_placeholder, output_placeholder, train_size, test_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels):
+    def __init__(self, input_placeholder, output_placeholder, train_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels):
         """
         Build a trainer 
         Parameters : 
             - input_placeholder : the input placeholder of the network 
             - output_placeholder : the output placeholder of the network 
-            - train_size : number of training samples per class 
-            - test_size : number of testing samples per class 
+            - train_size : total number of training samples
             - output : output tensor of the network 
             - should_drop : boolean the apply or not dropout layer 1 (depending on training or inference mode)
             - dropout_rate1_placeholder : dropout rate of the first dropout layer
@@ -31,7 +30,6 @@ class Trainer:
         self.input_placeholder = input_placeholder
         self.output_placeholder = output_placeholder
         self.train_size = train_size
-        self.test_size = test_size
         self.output = logits
         self.should_drop = should_drop
         self.dropout_rate1_placeholder = dropout_rate1_placeholder
@@ -72,13 +70,16 @@ class Trainer:
         ##### Create and run a session #####
 
         tf.set_random_seed(1234)
+        
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
 
-        with tf.Session() as sess:
+        with tf.Session(config=config) as sess:
 
                 sess.run(tf.global_variables_initializer())
 
                 for i in range(max_iterations+1):
-                        batch_indexes = np.random.randint(4*self.train_size,size=batch_size)
+                        batch_indexes = np.random.randint(self.train_size,size=batch_size)
                         _, loss_val = sess.run([train_op, loss], feed_dict={self.input_placeholder: self.train_data[batch_indexes], 
                                                                             self.output_placeholder: self.train_labels[batch_indexes],
                                                                             self.should_drop : False,

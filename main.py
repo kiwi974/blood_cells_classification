@@ -9,14 +9,10 @@ from sklearn.metrics import accuracy_score
 
 # Load training and eval data
 
-train_size = 700
-dl = DataLoader.DataLoader(train_size)
-train_data, train_labels = dl.preprocess('training')
+train_data, train_labels = np.load('DATA/binaries/TRAIN/data.npy'), np.load('DATA/binaries/TRAIN/labels.npy')
+test_data, test_labels = np.load('DATA/binaries/TEST/data.npy'), np.load('DATA/binaries/TEST/labels.npy')
 
-test_size = 300
-dl_test = DataLoader.DataLoader(test_size)
-test_data, test_labels = dl_test.preprocess('testing')
-
+train_size = train_data.shape[0]
 
 
 # Create the model 
@@ -26,18 +22,18 @@ y = tf.placeholder(dtype = tf.int32, shape = [None])
 should_drop = tf.placeholder(tf.bool)
 dropout_rate1_placeholder = tf.placeholder(tf.float32, shape=(), name='dropout1_rate')
 
-mb = ModelBuilder.ModelBuilder(60,80,4,x, dropout_rate1_placeholder, should_drop)
+mb = ModelBuilder.ModelBuilder(60, 80, 4 ,x , dropout_rate1_placeholder, should_drop)
 
 with tf.variable_scope('model') as scope: 
         logits = mb.networkBuilder()
 
-trainer = Trainer.Trainer(x,y,train_size, test_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
+trainer = Trainer.Trainer(x,y,train_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
 
 
 learning_rate = 0.000092
 batch_size = 100
 max_iterations = 15000
-dropout_rate1 = 0.7
+dropout_rate1 = 0.6
 
 losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1)
 
