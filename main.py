@@ -19,7 +19,7 @@ train_size = train_data.shape[0]
 
 x = tf.placeholder(dtype = tf.float32, shape = [None, 60, 80])
 y = tf.placeholder(dtype = tf.int32, shape = [None])
-should_drop = tf.placeholder(tf.bool)
+should_drop = tf.placeholder(tf.bool)  # The actual value can be set up in 'Trainer.py' directly
 dropout_rate1_placeholder = tf.placeholder(tf.float32, shape=(), name='dropout1_rate')
 
 mb = ModelBuilder.ModelBuilder(60, 80, 4 ,x , dropout_rate1_placeholder, should_drop)
@@ -33,7 +33,7 @@ trainer = Trainer.Trainer(x,y,train_size, logits, should_drop, dropout_rate1_pla
 learning_rate = 0.000092
 batch_size = 100
 max_iterations = 15000
-dropout_rate1 = 0.6
+dropout_rate1 = 0.2
 
 losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1)
 
@@ -62,7 +62,7 @@ if (do1_exp):
 # Influence of the learning rate 
 lr_exp = False
 if (lr_exp):
-    lr_range = [.000091,.000092,.000093,.000094,.000095,.000096,.000097,.000098,.000099]
+    lr_range = [1, 0.1, 0.01, 0.001, 0.0001]
     lr_accuracies = []
     for (i,lr) in enumerate(lr_range):
         print('\n\n\nTRAINING n°{0} :\n'.format(i+1))
@@ -79,7 +79,7 @@ if (lr_exp):
     print('\n')
 
 
-# Influence of the learning rate 
+# Influence of the batch size
 bs_exp = False
 if (bs_exp):
     bs_range = [5, 20, 50, 100, 200]

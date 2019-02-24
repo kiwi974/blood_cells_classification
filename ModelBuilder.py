@@ -142,22 +142,22 @@ class ModelBuilder:
         with tf.variable_scope('dense_1', reuse=tf.AUTO_REUSE):
             # Dense Layer 1
             dense1 = tf.layers.dense(inputs=pool_flat, units=32, activation=tf.nn.relu)
-        
-        with tf.variable_scope('dropout_1', reuse=tf.AUTO_REUSE):
-            # Dropout Layer 1
-            dropout1 = tf.layers.dropout(inputs=dense1, rate=self.dropout1_rate, training=self.should_drop) 
 
         with tf.variable_scope('dense_2', reuse=tf.AUTO_REUSE):
             # Dense Layer 2
-            dense2 = tf.layers.dense(inputs=dropout1, units=32, activation=tf.nn.relu)
+            dense2 = tf.layers.dense(inputs=dense1, units=32, activation=tf.nn.relu)
+
+        """with tf.variable_scope('dropout_1', reuse=tf.AUTO_REUSE):
+            # Dropout Layer 1
+            dropout1 = tf.layers.dropout(inputs=dense2, rate=self.dropout1_rate, training=self.should_drop)         
 
         with tf.variable_scope('dense_3', reuse=tf.AUTO_REUSE):
             # Dense Layer 3
-            dense3 = tf.layers.dense(inputs=dense2, units=16, activation=tf.nn.relu)
+            dense3 = tf.layers.dense(inputs=dropout1, units=8, activation=tf.nn.relu)
 
         with tf.variable_scope('dense_4', reuse=tf.AUTO_REUSE):
             # Dense Layer 4
-            dense4 = tf.layers.dense(inputs=dense3, units=8, activation=tf.nn.relu)
+            dense4 = tf.layers.dense(inputs=dropout1, units=8, activation=tf.nn.relu)"""
 
                         ###################################
                         ########## OUTPUT LOGITS ##########

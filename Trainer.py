@@ -76,6 +76,8 @@ class Trainer:
 
         with tf.Session(config=config) as sess:
 
+                writer = tf.summary.FileWriter("output", sess.graph)
+
                 sess.run(tf.global_variables_initializer())
 
                 for i in range(max_iterations+1):
@@ -86,25 +88,29 @@ class Trainer:
                                                                             self.dropout_rate1_placeholder : do_rate1})
                         losses.append(loss_val)
                         if i % 50 == 0:       
-                                #print("ITERATION : {0} ; Loss: {1}".format(i,loss_val))
+                                accuracies_it.append(i)
+
+                                # Accuracy on training set 
+                                train_pred = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data, 
+                                                                       self.should_drop : False,
+                                                                       self.dropout_rate1_placeholder : do_rate1})
+                                train_acc = accuracy_score(self.train_labels, train_pred)
+                                train_accuracies.append(train_acc)
+
+                                # Accuracy on testing set 
+                                test_pred = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data, 
+                                                                       self.should_drop : False,
+                                                                       self.dropout_rate1_placeholder : do_rate1})
+                                test_acc = accuracy_score(self.test_labels, test_pred)
+                                test_accuracies.append(test_acc)
+
+                                # Display the results 
                                 arrow_length = int(10*(i/max_iterations))
                                 progress_percent = (int(1000*(i/max_iterations)))/10
-                                sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} [{4}>{5}{6}%]'.format(1, i, 
-                                                 max_iterations, '{0:.6f}'.format(loss_val), '='*arrow_length,' '*(9-arrow_length), progress_percent))
+                                sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} ; testing_acc = {4} [{5}>{6}{7}%]'.format(1, i, 
+                                                 max_iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(test_acc), '='*arrow_length,' '*(9-arrow_length), progress_percent))
                                 sys.stdout.flush()
-                                accuracies_it.append(i)
-                                # Accuracy on training set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.train_data, 
-                                                                       self.should_drop : False,
-                                                                       self.dropout_rate1_placeholder : do_rate1})
-                                accuracy = accuracy_score(self.train_labels, acc_aux)
-                                train_accuracies.append(accuracy)
-                                # Accuracy on testing set 
-                                acc_aux = correct_pred.eval(feed_dict={self.input_placeholder : self.test_data, 
-                                                                       self.should_drop : False,
-                                                                       self.dropout_rate1_placeholder : do_rate1})
-                                accuracy = accuracy_score(self.test_labels, acc_aux)
-                                test_accuracies.append(accuracy)
+                                
 
 
                 ##### Testing #####
@@ -119,5 +125,7 @@ class Trainer:
 
                 # Calculate the accuracy
                 accuracy = match_count / len(self.test_labels)
+
+                writer.close()
 
         return losses, accuracy, accuracies_it, train_accuracies, test_accuracies

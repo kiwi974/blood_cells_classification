@@ -6,7 +6,7 @@ import DataLoader
 import numpy as np
 
 # Number of training samples to keep per class 
-training_samples_contingent = 800
+training_samples_contingent = 700
 
 # Number of testing samples to keep per class
 testing_samples_contingent = 250
