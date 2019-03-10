@@ -39,7 +39,7 @@ class ModelBuilder:
         """
         with tf.variable_scope('input_layer', reuse=tf.AUTO_REUSE):
             # Build the input layer, with a dynamically computed batch size
-            input_layer = tf.reshape(self.input_data, [-1, self.input_height, self.input_width, 1])
+            input_layer = tf.reshape(self.input_data, [50, self.input_height, self.input_width, 1])
 
                         ###########################################
                         ########## CONVOLUTIONAL LAYER 1 ##########
@@ -135,7 +135,7 @@ class ModelBuilder:
 
         with tf.variable_scope('pool_flat', reuse=tf.AUTO_REUSE):
             # Entry Flatten Layer 
-            pool_flat = tf.reshape(norm4, [-1, 3 * 5 * 8]) 
+            pool_flat = tf.reshape(norm4, [50, 7 * 10 * 8]) 
 
                         ##################################
                         ########## DENSE LAYERS ##########

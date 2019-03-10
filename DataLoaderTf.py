@@ -24,6 +24,7 @@ class DataLoaderTf:
   ###### Load and format the images #####
   def preprocess_image(self, image):
     image = tf.image.decode_jpeg(image, channels=3)
+    image = tf.image.rgb_to_grayscale(image)
     image = tf.image.resize_images(image, [120, 160])
     image /= 255.0  # normalize to [0,1] range
     return image

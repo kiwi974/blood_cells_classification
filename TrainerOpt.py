@@ -90,7 +90,8 @@ class TrainerOpt:
                 train_labels = self.next_element[1]
 
                 for i in range(epochs):
-                    _, loss_val, train_pred = sess.run([train_op, loss, correct_pred], feed_dict={self.input_placeholder: self.next_element[0], 
+                    sess.run(training_init_op)
+                    _, loss_val, train_pred = sess.run([train_op, loss, correct_pred], feed_dict={self.input_placeholder: self.next_element[0].eval(), 
                                                                             self.output_placeholder: train_labels,
                                                                             self.should_drop : False,
                                                                             self.dropout_rate1_placeholder : do_rate1})
