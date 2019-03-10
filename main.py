@@ -25,7 +25,7 @@ testing_init_op = iterator.make_initializer(test_dataset)
 
 # Create the model 
 
-x = tf.placeholder(dtype = tf.float32, shape = [None, 120, 160])
+x = tf.placeholder(dtype = tf.float32, shape = [None, 120, 160,1])
 y = tf.placeholder(dtype = tf.int32, shape = [None])
 should_drop = tf.placeholder(tf.bool)  # The actual value can be set up in 'Trainer.py' directly
 dropout_rate1_placeholder = tf.placeholder(tf.float32, shape=(), name='dropout1_rate')

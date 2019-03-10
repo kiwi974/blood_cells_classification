@@ -63,8 +63,16 @@ class TrainerOpt:
                 train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
         # Convert logits to label indexes
-        with tf.variable_scope('eval', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('correct_pred', reuse=tf.AUTO_REUSE):
                 correct_pred = tf.argmax(self.output, axis=1)
+
+        # Equality between prediction and target prediciton 
+        with tf.variable_scope('equality', reuse=tf.AUTO_REUSE):
+            equality = tf.equal(correct_pred, tf.argmax(self.next_element[1], 0))
+
+        # Accuracy of the prediction 
+        with tf.variable_scope('accuracy', reuse=tf.AUTO_REUSE):
+            accuracy = tf.reduce_mean(tf.cast(equality, tf.float32))
 
         # Add ops to save and restore all the variables.
         saver = tf.train.Saver()
@@ -87,12 +95,14 @@ class TrainerOpt:
 
                 sess.run(tf.global_variables_initializer())
 
-                train_labels = self.next_element[1]
 
                 for i in range(epochs):
                     sess.run(training_init_op)
-                    _, loss_val, train_pred = sess.run([train_op, loss, correct_pred], feed_dict={self.input_placeholder: self.next_element[0].eval(), 
-                                                                            self.output_placeholder: train_labels,
+                    train_data = self.next_element[0]
+                    train_labels = self.next_element[1]
+
+                    _, loss_val, train_pred = sess.run([train_op, loss, correct_pred], feed_dict={self.input_placeholder: train_data.eval(), 
+                                                                            self.output_placeholder: train_labels.eval(),
                                                                             self.should_drop : False,
                                                                             self.dropout_rate1_placeholder : do_rate1})
                     losses.append(loss_val)
@@ -101,22 +111,23 @@ class TrainerOpt:
                         accuracies_it.append(i)
 
                         # Accuracy on training set 
-                        train_acc = accuracy_score(train_labels, train_pred)
-                        train_accuracies.append(train_acc)
+                        train_acc = sess.run([accuracy], feed_dict={self.input_placeholder : train_data.eval(), 
+                                                                       self.should_drop : False,
+                                                                       self.dropout_rate1_placeholder : do_rate1})
+                        train_accuracies.append(train_acc[0])
 
                         # Accuracy on testing set 
                         sess.run(testing_init_op)
-                        test_pred = correct_pred.eval(feed_dict={self.input_placeholder : self.next_element[0], 
+                        test_acc = sess.run([accuracy], feed_dict={self.input_placeholder : self.next_element[0].eval(), 
                                                                        self.should_drop : False,
                                                                        self.dropout_rate1_placeholder : do_rate1})
-                        test_acc = accuracy_score(self.next_element[1], test_pred)
-                        test_accuracies.append(test_acc)
+                        test_accuracies.append(test_acc[0])
 
                         # Display the results 
                         arrow_length = int(10*(i/epochs))
                         progress_percent = (int(1000*(i/epochs)))/10
                         sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
-                                                 1, i, epochs, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc),
+                                                 1, i, epochs, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc[0]), '{0:.6f}'.format(test_acc[0]),
                                                  '='*arrow_length,' '*(9-arrow_length), progress_percent))
                         sys.stdout.flush()
                 
