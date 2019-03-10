@@ -41,7 +41,7 @@ class Trainer:
 
 
     
-    def train(self, learning_rate, batch_size, max_iterations, do_rate1):
+    def train(self, learning_rate, batch_size, max_iterations, do_rate1, backup_folder):
         """
         Train the model. Optimizer is Adam, loss is the sparse softmax cross entropy with logits, et predictions are 
         checked with argmax on logits. 
@@ -50,6 +50,7 @@ class Trainer:
             - batch_size : size of the training batches 
             - max_iterations : maximum number of iterations done for training 
             - do_rate1 : dropout rate of the first dropout layer
+            - backu_folder : folder to which save the current trained model
         """
 
         # Define a loss function
@@ -64,6 +65,9 @@ class Trainer:
         with tf.variable_scope('eval', reuse=tf.AUTO_REUSE):
                 correct_pred = tf.argmax(self.output, axis=1)
 
+        # Add ops to save and restore all the variables.
+        saver = tf.train.Saver()
+
         # Record the different training and testing figures 
         losses, accuracies_it, train_accuracies, test_accuracies = [], [], [], []
 
@@ -73,6 +77,8 @@ class Trainer:
         
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
+
+        print('\n\n')
 
         with tf.Session(config=config) as sess:
 
@@ -107,25 +113,29 @@ class Trainer:
                                 # Display the results 
                                 arrow_length = int(10*(i/max_iterations))
                                 progress_percent = (int(1000*(i/max_iterations)))/10
-                                sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} ; testing_acc = {4} [{5}>{6}{7}%]'.format(1, i, 
-                                                 max_iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(test_acc), '='*arrow_length,' '*(9-arrow_length), progress_percent))
+                                sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
+                                                 1, i, max_iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc),
+                                                 '='*arrow_length,' '*(9-arrow_length), progress_percent))
                                 sys.stdout.flush()
+                
+                save_path = saver.save(sess, "{0}/model.ckpt".format(backup_folder))
+                print('\n\nModel saved in %s' % save_path)
                                 
 
 
                 ##### Testing #####
 
                 # Run predictions against the full test set.
-                predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, 
-                                                                self.should_drop : False, 
-                                                                 self.dropout_rate1_placeholder : do_rate1})[0]
+                #predicted = sess.run([correct_pred], feed_dict={self.input_placeholder: self.test_data, 
+                #                                                self.should_drop : False, 
+                #                                                 self.dropout_rate1_placeholder : do_rate1})[0]
 
                 # Calculate correct matches 
-                match_count = sum([int(y == y_) for y, y_ in zip(self.test_labels, predicted)])
+                #match_count = sum([int(y == y_) for y, y_ in zip(self.test_labels, predicted)])
 
                 # Calculate the accuracy
-                accuracy = match_count / len(self.test_labels)
+                #accuracy = match_count / len(self.test_labels)
 
                 writer.close()
 
-        return losses, accuracy, accuracies_it, train_accuracies, test_accuracies
+        return losses, accuracies_it, train_accuracies, test_accuracies
