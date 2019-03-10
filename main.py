@@ -30,12 +30,24 @@ with tf.variable_scope('model') as scope:
 trainer = Trainer.Trainer(x,y,train_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
 
 
+# Define hyper parameters and others 
 learning_rate = 0.000092
 batch_size = 100
-max_iterations = 15000
+max_iterations = 35000
 dropout_rate1 = 0.2
+backup_folder = "models/"+"model13"    # folder in which save the model and other useful information 
 
-losses, accuracy, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1)
+losses, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1, backup_folder)
+
+
+# Save the hyperparameters in a file
+hyperp_names = ",".join(['learning_rate', 'batch_size', 'max_iterations', 'dropout_rate1', 'loss', 'train_accuracy', 'test_accuracy'])
+hyperp = ",".join([str(learning_rate), str(batch_size), str(max_iterations), str(dropout_rate1), str(losses[-1]), str(train_accuracies[-1]), str(test_accuracies[-1])])
+
+with open(backup_folder+'/hyper_parameters.txt', 'w+') as f:
+    f.write(hyperp_names + '\n' + hyperp)
+    f.close()
+
 
 
 # Influence of the rate of the first dropout layer 
@@ -100,14 +112,15 @@ if (bs_exp):
 
 
 if (True):
-    print("\nAccuracy: {:.3f}".format(accuracy))
+    print("\nTraining accuracy: {:.3f}".format(train_accuracies[-1]))
+    print("Testing accuracy: {:.3f}\n".format(test_accuracies[-1]))
 
     fig,ax = plt.subplots(figsize=(15,15))
     ax.plot(np.arange(max_iterations+1),losses)
     ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
     ax.set_xlabel('Iterations',fontsize=22)
     ax.set_ylabel('Cross Entropy Loss', fontsize=22)
-    fig.savefig('loss.png', bbox_inches='tight')
+    fig.savefig(backup_folder+'/loss.png', bbox_inches='tight')
     plt.show()
 
     fig,ax = plt.subplots(figsize=(15,15))
@@ -117,5 +130,5 @@ if (True):
     ax.set_xlabel('Iterations',fontsize=22)
     ax.set_ylabel('Accuracy', fontsize=22)
     ax.legend()
-    fig.savefig('accuracy.png', bbox_inches='tight')
+    fig.savefig(backup_folder+'/accuracy.png', bbox_inches='tight')
     plt.show()

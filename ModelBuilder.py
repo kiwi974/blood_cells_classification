@@ -19,6 +19,8 @@ class ModelBuilder:
             - input_data : the data fedding the model (a placeholder in practise)
             - dropout1_rate : dropout rate of the first dropout layer
             - mode : default is True for training, otherwise it is False for inference
+        Return : 
+            - logits : the built neural network 
         """
         self.input_height = input_height
         self.input_width = input_width
@@ -47,8 +49,8 @@ class ModelBuilder:
             # Convolutional Layer 1
             conv1 = tf.layers.conv2d(
                 inputs=input_layer,
-                filters=32,
-                kernel_size=[5,5],
+                filters=16,
+                kernel_size=[3,3],
                 padding="same",
                 activation=tf.nn.relu
             )
@@ -69,8 +71,8 @@ class ModelBuilder:
             # Convolutional Layer 2
             conv2 = tf.layers.conv2d(
                 inputs=norm1,
-                filters=32,
-                kernel_size=[5,5],
+                filters=16,
+                kernel_size=[3,3],
                 padding="same",
                 activation=tf.nn.relu
             )
@@ -91,8 +93,8 @@ class ModelBuilder:
             # Convolutional Layer 3 
             conv3 = tf.layers.conv2d(
                 inputs=norm2,
-                filters=16,
-                kernel_size=[5,5],
+                filters=8,
+                kernel_size=[3,3],
                 padding="same",
                 activation=tf.nn.relu
             )
@@ -113,8 +115,8 @@ class ModelBuilder:
             # Convolutional Layer 3 
             conv4 = tf.layers.conv2d(
                 inputs=norm3,
-                filters=16,
-                kernel_size=[5,5],
+                filters=8,
+                kernel_size=[3,3],
                 padding="same",
                 activation=tf.nn.relu
             )
@@ -133,7 +135,7 @@ class ModelBuilder:
 
         with tf.variable_scope('pool_flat', reuse=tf.AUTO_REUSE):
             # Entry Flatten Layer 
-            pool_flat = tf.reshape(norm4, [-1, 3 * 5 * 16]) 
+            pool_flat = tf.reshape(norm4, [-1, 3 * 5 * 8]) 
 
                         ##################################
                         ########## DENSE LAYERS ##########
@@ -141,23 +143,15 @@ class ModelBuilder:
 
         with tf.variable_scope('dense_1', reuse=tf.AUTO_REUSE):
             # Dense Layer 1
-            dense1 = tf.layers.dense(inputs=pool_flat, units=32, activation=tf.nn.relu)
+            dense1 = tf.layers.dense(inputs=pool_flat, units=16, activation=tf.nn.relu)
 
         with tf.variable_scope('dense_2', reuse=tf.AUTO_REUSE):
             # Dense Layer 2
-            dense2 = tf.layers.dense(inputs=dense1, units=32, activation=tf.nn.relu)
-
-        """with tf.variable_scope('dropout_1', reuse=tf.AUTO_REUSE):
-            # Dropout Layer 1
-            dropout1 = tf.layers.dropout(inputs=dense2, rate=self.dropout1_rate, training=self.should_drop)         
+            dense2 = tf.layers.dense(inputs=dense1, units=16, activation=tf.nn.relu)
 
         with tf.variable_scope('dense_3', reuse=tf.AUTO_REUSE):
             # Dense Layer 3
-            dense3 = tf.layers.dense(inputs=dropout1, units=8, activation=tf.nn.relu)
-
-        with tf.variable_scope('dense_4', reuse=tf.AUTO_REUSE):
-            # Dense Layer 4
-            dense4 = tf.layers.dense(inputs=dropout1, units=8, activation=tf.nn.relu)"""
+            dense3 = tf.layers.dense(inputs=dense2, units=8, activation=tf.nn.relu)
 
                         ###################################
                         ########## OUTPUT LOGITS ##########
@@ -165,6 +159,6 @@ class ModelBuilder:
             
         with tf.variable_scope('logits', reuse=tf.AUTO_REUSE):
             # Logits Layer
-            logits = tf.layers.dense(inputs=dense2, units=self.classes)
+            logits = tf.layers.dense(inputs=dense3, units=self.classes)
 
-            return logits 
+        return logits 
