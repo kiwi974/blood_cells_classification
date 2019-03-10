@@ -1,4 +1,4 @@
-import DataLoader, ModelBuilder, Trainer
+import DataLoaderTf, ModelBuilder, TrainerOpt
 import tensorflow as tf
 import sys 
 import matplotlib.pyplot as plt 
@@ -9,35 +9,44 @@ from sklearn.metrics import accuracy_score
 
 # Load training and eval data
 
-train_data, train_labels = np.load('DATA/binaries/TRAIN/data.npy'), np.load('DATA/binaries/TRAIN/labels.npy')
-test_data, test_labels = np.load('DATA/binaries/TEST/data.npy'), np.load('DATA/binaries/TEST/labels.npy')
+dlt = DataLoaderTf.DataLoaderTf()
 
-train_size = train_data.shape[0]
+train_dataset = dlt.load()
+test_dataset = dlt.load('./DATA/images/TEST/')
 
+# Create general iterator 
+iterator = tf.data.Iterator.from_structure(train_dataset.output_types,
+                                               train_dataset.output_shapes)
+next_element = iterator.get_next()
+
+# make datasets that we can initialize separately, but using the same structure via the common iterator
+training_init_op = iterator.make_initializer(train_dataset)
+testing_init_op = iterator.make_initializer(test_dataset)
 
 # Create the model 
 
-x = tf.placeholder(dtype = tf.float32, shape = [None, 60, 80])
+x = tf.placeholder(dtype = tf.float32, shape = [None, 120, 160])
 y = tf.placeholder(dtype = tf.int32, shape = [None])
 should_drop = tf.placeholder(tf.bool)  # The actual value can be set up in 'Trainer.py' directly
 dropout_rate1_placeholder = tf.placeholder(tf.float32, shape=(), name='dropout1_rate')
 
-mb = ModelBuilder.ModelBuilder(60, 80, 4 ,x , dropout_rate1_placeholder, should_drop)
+mb = ModelBuilder.ModelBuilder(120, 160, 4 ,x , dropout_rate1_placeholder, should_drop)
 
 with tf.variable_scope('model') as scope: 
         logits = mb.networkBuilder()
 
-trainer = Trainer.Trainer(x,y,train_size, logits, should_drop, dropout_rate1_placeholder, train_data, train_labels, test_data, test_labels)
+trainer = TrainerOpt.TrainerOpt(x, y, logits, should_drop, dropout_rate1_placeholder, iterator, next_element, train_dataset, test_dataset)
 
 
 # Define hyper parameters and others 
 learning_rate = 0.000092
-batch_size = 100
-max_iterations = 35000
+batch_size = 50
+epochs = 20
+max_iterations = 15000
 dropout_rate1 = 0.2
-backup_folder = "models/"+"model13"    # folder in which save the model and other useful information 
+backup_folder = "models/"+"peanuts"    # folder in which save the model and other useful information 
 
-losses, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, batch_size, max_iterations, dropout_rate1, backup_folder)
+losses, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, epochs, dropout_rate1, backup_folder)
 
 
 # Save the hyperparameters in a file

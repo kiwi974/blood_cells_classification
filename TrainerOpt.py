@@ -3,7 +3,7 @@
     of well classified samples. 
 """
 
-import DataLoader, ModelBuilder
+import DataLoaderTf, ModelBuilder
 import tensorflow as tf
 import numpy as np 
 from sklearn.metrics import accuracy_score
@@ -29,7 +29,7 @@ class TrainerOpt:
 
         self.input_placeholder = input_placeholder
         self.output_placeholder = output_placeholder
-        self.ouput = logits
+        self.output = logits
         self.should_drop = should_drop
         self.dropout_rate1_placeholder = dropout_rate1_placeholder
         self.iterator = iterator
