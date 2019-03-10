@@ -125,7 +125,7 @@ if (True):
     print("Testing accuracy: {:.3f}\n".format(test_accuracies[-1]))
 
     fig,ax = plt.subplots(figsize=(15,15))
-    ax.plot(np.arange(max_iterations+1),losses)
+    ax.plot(np.arange(epochs),losses)
     ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
     ax.set_xlabel('Iterations',fontsize=22)
     ax.set_ylabel('Cross Entropy Loss', fontsize=22)
