@@ -31,6 +31,8 @@ class TrainerOpt:
         self.next_element = next_element
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
+
+
     
     def train(self, learning_rate, iterations, do_rate1, backup_folder):
         """
@@ -88,47 +90,50 @@ class TrainerOpt:
 
                 sess.run(tf.global_variables_initializer())
 
+                sess.run(training_init_op)
 
-                for i in range(iterations):
+                for i in range(iterations+1):
 
                     if (i==0):
                         print('\n\nTRAINING & TESTING : ')
+                        test_acc = 0.
 
-                    sess.run(training_init_op)
-
-                    _, loss_val = sess.run([train_op, loss], feed_dict={self.should_drop : False,
+                    _, loss_val, train_acc = sess.run([train_op, loss, accuracy], feed_dict={self.should_drop : False,
                                                                         self.dropout_rate1_placeholder : do_rate1})
                     losses.append(loss_val)
+                    train_accuracies.append(train_acc)
 
-                    if (i%20 == 0):
+                    # Accuracy on testing set 
+                    """if (i%50 == 0):
                         accuracies_it.append(i)
-
-                        # Accuracy on training set 
-                        prediction, train_acc = sess.run([correct_pred, accuracy], feed_dict={self.should_drop : False,
-                                                                    self.dropout_rate1_placeholder : do_rate1})
-
-                        train_accuracies.append(train_acc) 
-
-                        # Accuracy on testing set 
-                        #if (i%100 == 0):
                         sess.run(testing_init_op)
                         test_acc = sess.run([accuracy], feed_dict={self.should_drop : False,
-                                                                        self.dropout_rate1_placeholder : do_rate1})
-                        test_accuracies.append(test_acc[0])
+                                                                   self.dropout_rate1_placeholder : do_rate1})[0]
+                        test_accuracies.append(test_acc)"""
 
-                        # Display the results 
-                        arrow_length = int(10*(i/iterations))
-                        progress_percent = (int(1000*(i/iterations)))/10
-                        sys.stdout.write('\r    \_ EPOCH : {0} ; ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
-                                                 i//100+1, i, iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc[0]),
+                    # Display the results 
+                    arrow_length = int(10*(i/iterations))
+                    progress_percent = (int(1000*(i/iterations)))/10
+                    sys.stdout.write('\r    \_ EPOCH : {0} ; ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
+                                                 i//100+1, i, iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc),
                                                  '='*arrow_length,' '*(9-arrow_length), progress_percent))
-                        sys.stdout.flush()
+                    sys.stdout.flush()
                 
+
+                ################## now setup the validation run ##################
+                valid_iters = 20
+                # re-initialize the iterator, but this time with validation data
+                sess.run(testing_init_op)
+                avg_acc = 0
+                for i in range(valid_iters):
+                    acc = sess.run([accuracy])
+                    avg_acc += acc[0]
+                print("\n\nAverage validation set accuracy over {} iterations is {:.2f}%\n".format(valid_iters, (avg_acc / valid_iters) * 100))
+                ##################################################################
                 
                 save_path = saver.save(sess, "{0}/model.ckpt".format(backup_folder))
                 print('\n\nModel saved in %s' % save_path)
-                                
-
+                
 
                 writer.close()
 

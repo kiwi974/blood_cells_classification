@@ -23,9 +23,6 @@ iterator = tf.data.Iterator.from_structure(train_dataset.output_types,
                                                train_dataset.output_shapes)
 next_element = iterator.get_next()
 
-# make datasets that we can initialize separately, but using the same structure via the common iterator
-training_init_op = iterator.make_initializer(train_dataset)
-testing_init_op = iterator.make_initializer(test_dataset)
 
 # Create the model 
 
@@ -40,19 +37,19 @@ with tf.variable_scope('model') as scope:
 trainer = TrainerOpt.TrainerOpt(logits, should_drop, dropout_rate1_placeholder, iterator, next_element, train_dataset, test_dataset)
 
 # Define hyper parameters and others 
-learning_rate = 0.001
-epochs = 2
-iterations = 2*round(float(training_count)/batch_size)
+learning_rate = 0.0001
+epochs = 20
+iterations = epochs*round(float(training_count)/batch_size)
 dropout_rate1 = 0.2
-backup_folder = "models/"+"peanuts"    # folder in which save the model and other useful information 
+backup_folder = "models/"+"reference_model"    # folder in which save the model and other useful information 
 
 
 losses, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, iterations, dropout_rate1, backup_folder)
 
 
 # Save the hyperparameters in a file
-hyperp_names = ",".join(['learning_rate', 'batch_size', 'max_iterations', 'dropout_rate1', 'loss', 'train_accuracy', 'test_accuracy'])
-hyperp = ",".join([str(learning_rate), str(batch_size), str(iterations), str(dropout_rate1), str(losses[-1]), str(train_accuracies[-1]), str(test_accuracies[-1])])
+hyperp_names = ",".join(['learning_rate', 'batch_size', 'nb_epochs', 'total_nb_iterations', 'dropout_rate1', 'loss', 'train_accuracy', 'test_accuracy'])
+hyperp = ",".join([str(learning_rate), str(batch_size), str(epochs), str(iterations), str(dropout_rate1), str(losses[-1]), str(train_accuracies[-1]), str(test_accuracies[-1])])
 
 with open(backup_folder+'/hyper_parameters.txt', 'w+') as f:
     f.write(hyperp_names + '\n' + hyperp)
@@ -126,7 +123,7 @@ if (True):
     print("Testing accuracy: {:.3f}\n".format(test_accuracies[-1]))
 
     fig,ax = plt.subplots(figsize=(15,15))
-    ax.plot(np.arange(iterations),losses)
+    ax.plot(np.arange(iterations+1),losses)
     ax.set_title('Blood Cells Recognition Loss (batch size : {0})'.format(batch_size), fontsize=26)
     ax.set_xlabel('Iterations',fontsize=22)
     ax.set_ylabel('Cross Entropy Loss', fontsize=22)
@@ -134,7 +131,7 @@ if (True):
     plt.show()
 
     fig,ax = plt.subplots(figsize=(15,15))
-    ax.plot(accuracies_it, train_accuracies, label = 'Accuracy on training set')
+    ax.plot(np.arange(iterations+1), train_accuracies, label = 'Accuracy on training set')
     ax.plot(accuracies_it, test_accuracies, label = 'Accuracy on testing set')
     ax.set_title('Blood Cells Recognition Accuracy (batch size : {0}, lr = {1})'.format(batch_size, learning_rate), fontsize=26)
     ax.set_xlabel('Iterations',fontsize=22)
