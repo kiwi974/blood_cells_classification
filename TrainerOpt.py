@@ -13,12 +13,10 @@ import sys
 class TrainerOpt:
 
 
-    def __init__(self, input_placeholder, output_placeholder, logits, should_drop, dropout_rate1_placeholder, iterator, next_element, train_dataset, test_dataset):
+    def __init__(self, logits, should_drop, dropout_rate1_placeholder, iterator, next_element, train_dataset, test_dataset):
         """
         Build a trainer 
         Parameters : 
-            - input_placeholder : the input placeholder of the network 
-            - output_placeholder : the output placeholder of the network 
             - train_size : total number of training samples
             - output : output tensor of the network 
             - should_drop : boolean the apply or not dropout layer 1 (depending on training or inference mode)
@@ -26,19 +24,15 @@ class TrainerOpt:
             - train_data, train_labels : training samples (features and labels)
             - test_data, test_labels : testing samples (features and labels) 
         """
-
-        self.input_placeholder = input_placeholder
-        self.output_placeholder = output_placeholder
-        self.output = logits
+        self.logits = logits
         self.should_drop = should_drop
         self.dropout_rate1_placeholder = dropout_rate1_placeholder
         self.iterator = iterator
         self.next_element = next_element
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
-        self.current_labels = np.array([[0.,0.,0.,0.] for i in range(100)])
     
-    def train(self, learning_rate, epochs, do_rate1, backup_folder):
+    def train(self, learning_rate, iterations, do_rate1, backup_folder):
         """
         Train the model. Optimizer is Adam, loss is the sparse softmax cross entropy with logits, et predictions are 
         checked with argmax on logits. 
@@ -50,29 +44,25 @@ class TrainerOpt:
             - backu_folder : folder to which save the current trained model
         """
 
-        print(self.output.get_shape().ndims)
-        print(np.ndim(self.current_labels))
-        print(type(self.current_labels))
-
         # Make datasets that we can initialize separately, but using the same structure via the common iterator
         training_init_op = self.iterator.make_initializer(self.train_dataset)
         testing_init_op = self.iterator.make_initializer(self.test_dataset)
 
         # Define a loss function
         with tf.variable_scope('loss', reuse=tf.AUTO_REUSE):
-            loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits_v2(labels = self.current_labels, 
-                                                                                logits = self.output))
+            loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits_v2(labels = self.next_element[1], 
+                                                                                logits = self.logits))
         # Define an optimizer 
         with tf.variable_scope('train_op', reuse=tf.AUTO_REUSE):
             train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
         # Convert logits to label indexes
         with tf.variable_scope('correct_pred', reuse=tf.AUTO_REUSE):
-            correct_pred = tf.argmax(self.output, axis=1)
+            correct_pred = tf.argmax(self.logits, axis=1)
 
         # Equality between prediction and target prediciton 
         with tf.variable_scope('equality', reuse=tf.AUTO_REUSE):
-            equality = tf.equal(correct_pred, tf.argmax(self.current_labels,axis=1)) #tf.argmax(self.current_labels, 0))
+            equality = tf.equal(correct_pred, tf.argmax(self.next_element[1],axis=1)) #tf.argmax(self.current_labels, 0))
 
         # Accuracy of the prediction 
         with tf.variable_scope('accuracy', reuse=tf.AUTO_REUSE):
@@ -91,7 +81,6 @@ class TrainerOpt:
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
 
-        print('\n\n')
 
         with tf.Session(config=config) as sess:
 
@@ -100,45 +89,38 @@ class TrainerOpt:
                 sess.run(tf.global_variables_initializer())
 
 
-                for i in range(epochs):
+                for i in range(iterations):
+
+                    if (i==0):
+                        print('\n\nTRAINING & TESTING : ')
+
                     sess.run(training_init_op)
-                    train_data = self.next_element[0].eval()
-                    self.current_labels = self.next_element[1].eval()
-                    
-                    _, loss_val = sess.run([train_op, loss], feed_dict={self.input_placeholder: train_data, 
-                                                                        self.output_placeholder: self.current_labels,
-                                                                        self.should_drop : False,
+
+                    _, loss_val = sess.run([train_op, loss], feed_dict={self.should_drop : False,
                                                                         self.dropout_rate1_placeholder : do_rate1})
-                    print('\n%s\n' %(gradient))
                     losses.append(loss_val)
 
-                    if (i%5 == 0):
+                    if (i%20 == 0):
                         accuracies_it.append(i)
 
                         # Accuracy on training set 
-                        prediction, equ, train_acc = sess.run([correct_pred, equality, accuracy], feed_dict={self.input_placeholder : train_data, 
-                                                                    self.should_drop : False,
+                        prediction, train_acc = sess.run([correct_pred, accuracy], feed_dict={self.should_drop : False,
                                                                     self.dropout_rate1_placeholder : do_rate1})
-                        print('\nprediction : ' + str(prediction))
-                        print('labels : ' + str(np.argmax(self.current_labels, axis=1)))
-                        equ = tf.equal(prediction, np.argmax(self.current_labels, axis=1)).eval()
-                        print('equality : ' + str(equ))#+ str(equ))
-                        acc_aux = tf.reduce_mean(tf.cast(equ, tf.float32)).eval()
-                        print('accuracy : ' + str(acc_aux))
-                        train_accuracies.append(train_acc) #[0])
+
+                        train_accuracies.append(train_acc) 
 
                         # Accuracy on testing set 
+                        #if (i%100 == 0):
                         sess.run(testing_init_op)
-                        test_acc = sess.run([accuracy], feed_dict={self.input_placeholder : self.next_element[0].eval(), 
-                                                                       self.should_drop : False,
-                                                                       self.dropout_rate1_placeholder : do_rate1})
+                        test_acc = sess.run([accuracy], feed_dict={self.should_drop : False,
+                                                                        self.dropout_rate1_placeholder : do_rate1})
                         test_accuracies.append(test_acc[0])
 
                         # Display the results 
-                        arrow_length = int(10*(i/epochs))
-                        progress_percent = (int(1000*(i/epochs)))/10
-                        sys.stdout.write('\r    \_ ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
-                                                 1, i, epochs, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc[0]),
+                        arrow_length = int(10*(i/iterations))
+                        progress_percent = (int(1000*(i/iterations)))/10
+                        sys.stdout.write('\r    \_ EPOCH : {0} ; ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
+                                                 i//100+1, i, iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc[0]),
                                                  '='*arrow_length,' '*(9-arrow_length), progress_percent))
                         sys.stdout.flush()
                 

@@ -36,7 +36,7 @@ class DataLoaderTf:
 
 
 
-  def load(self, pathToData='./DATA/images/TRAIN/'):
+  def load(self, batch_size, pathToData='./DATA/images/TRAIN/'):
 
     ###### Retrieve the images ######
     data_root = pathlib.Path(pathToData)
@@ -46,7 +46,6 @@ class DataLoaderTf:
 
     image_count = len(all_image_paths)
     print("There are {0:.0f} training images in total." .format(image_count))
- 
 
     ###### Determine the label of each image ######
 
@@ -71,12 +70,12 @@ class DataLoaderTf:
     image_ds = path_ds.map(self.load_and_preprocess_image)
 
     # Create a dataset with labels 
-    label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(all_image_labels, tf.int64))
+    label_ds = tf.data.Dataset.from_tensor_slices(tf.cast(all_image_labels, tf.int64)).map(lambda z: tf.one_hot(z,4))
 
     # Zip images and labels 
-    ds = tf.data.Dataset.zip((image_ds, label_ds)).shuffle(500).repeat().batch(50)
+    ds = tf.data.Dataset.zip((image_ds, label_ds)).shuffle(500).repeat().batch(batch_size)
 
-    return ds
+    return ds, image_count
 
 
 
