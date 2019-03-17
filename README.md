@@ -20,6 +20,10 @@ As explained above, this study is practical, and is supposed to allow to become 
   - What is the influence of dropping on both training and testing performances ? 
   - What is the influence of data augmentation on both training and testing performances ? 
   
+  
+# The Default Model 
+
+The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing.   
 
 
 # Equipment 
