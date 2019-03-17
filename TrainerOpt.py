@@ -34,7 +34,7 @@ class TrainerOpt:
 
 
     
-    def train(self, learning_rate, iterations, do_rate1, backup_folder):
+    def train(self, learning_rate, iterations, do_rate1, backup_folder, drop1):
         """
         Train the model. Optimizer is Adam, loss is the sparse softmax cross entropy with logits, et predictions are 
         checked with argmax on logits. 
@@ -98,7 +98,7 @@ class TrainerOpt:
                         print('\n\nTRAINING & TESTING : ')
                         test_acc = 0.
 
-                    _, loss_val, train_acc = sess.run([train_op, loss, accuracy], feed_dict={self.should_drop : False,
+                    _, loss_val, train_acc = sess.run([train_op, loss, accuracy], feed_dict={self.should_drop : drop1,
                                                                         self.dropout_rate1_placeholder : do_rate1})
                     losses.append(loss_val)
                     train_accuracies.append(train_acc)
@@ -114,9 +114,9 @@ class TrainerOpt:
                     # Display the results 
                     arrow_length = int(10*(i/iterations))
                     progress_percent = (int(1000*(i/iterations)))/10
-                    sys.stdout.write('\r    \_ EPOCH : {0} ; ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4} ; testing_acc = {5} [{6}>{7}{8}%]'.format(
-                                                 i//100+1, i, iterations, '{0:.6f}'.format(loss_val), '{0:.6f}'.format(train_acc), '{0:.6f}'.format(test_acc),
-                                                 '='*arrow_length,' '*(9-arrow_length), progress_percent))
+                    sys.stdout.write('\r    \_ EPOCH : {0} ; ITERATION : {1} / {2} ; loss = {3} ; training_acc = {4}% ; [{6}>{7}{8}%]'.format(
+                                                 i//100+1, i, iterations, '{0:.6f}'.format(loss_val), '{0:.1f}'.format(train_acc*100), 0,
+                                                 '='*arrow_length,' '*(10-arrow_length), progress_percent))
                     sys.stdout.flush()
                 
 
@@ -129,7 +129,8 @@ class TrainerOpt:
                     acc = sess.run([accuracy], feed_dict={self.should_drop : False,
                                                             self.dropout_rate1_placeholder : do_rate1})
                     avg_acc += acc[0]
-                print("\n\nAverage validation set accuracy over {} iterations is {:.2f}%\n".format(valid_iters, (avg_acc / valid_iters) * 100))
+                avg_acc = (avg_acc / valid_iters) * 100
+                print("\n\nAverage validation set accuracy over {} iterations is {:.2f}%\n".format(valid_iters, avg_acc))
                 ##################################################################
                 
                 save_path = saver.save(sess, "{0}/model.ckpt".format(backup_folder))
