@@ -126,7 +126,8 @@ class TrainerOpt:
                 sess.run(testing_init_op)
                 avg_acc = 0
                 for i in range(valid_iters):
-                    acc = sess.run([accuracy])
+                    acc = sess.run([accuracy], feed_dict={self.should_drop : False,
+                                                            self.dropout_rate1_placeholder : do_rate1})
                     avg_acc += acc[0]
                 print("\n\nAverage validation set accuracy over {} iterations is {:.2f}%\n".format(valid_iters, (avg_acc / valid_iters) * 100))
                 ##################################################################

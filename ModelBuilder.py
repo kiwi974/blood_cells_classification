@@ -48,19 +48,19 @@ class ModelBuilder:
             # Convolutional Layer 1
             conv1 = tf.layers.conv2d(
                 inputs=input_layer,
-                filters=32,
+                filters=16,
                 kernel_size=[3,3],
                 padding="same",
                 activation=tf.nn.relu
             )
 
-        """with tf.variable_scope('pool_1', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('pool_1', reuse=tf.AUTO_REUSE):
             # Pooling Layer 1
-            pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)"""
+            pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
         with tf.variable_scope('norm_1', reuse=tf.AUTO_REUSE):
             # Normalization Layer 1
-            norm1 = tf.nn.local_response_normalization(input=tf.to_float(conv1))
+            norm1 = tf.nn.local_response_normalization(input=tf.to_float(pool1))
 
                         ###########################################
                         ########## CONVOLUTIONAL LAYER 2 ##########
@@ -76,13 +76,13 @@ class ModelBuilder:
                 activation=tf.nn.relu
             )
 
-        """with tf.variable_scope('pool_2', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('pool_2', reuse=tf.AUTO_REUSE):
             # Pooling Layer 2
-            pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)"""
+            pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
         with tf.variable_scope('norm_2', reuse=tf.AUTO_REUSE):
             # Normalization Layer 2
-            norm2 = tf.nn.local_response_normalization(input=tf.to_float(conv2))
+            norm2 = tf.nn.local_response_normalization(input=tf.to_float(pool2))
 
                         ###########################################
                         ########## CONVOLUTIONAL LAYER 3 ##########
@@ -134,7 +134,7 @@ class ModelBuilder:
 
         with tf.variable_scope('pool_flat', reuse=tf.AUTO_REUSE):
             # Entry Flatten Layer 
-            pool_flat = tf.reshape(norm4, [-1, 120 * 160 * 8]) 
+            pool_flat = tf.reshape(norm4, [-1, 30 * 40 * 8]) 
 
                         ##################################
                         ########## DENSE LAYERS ##########
@@ -144,17 +144,17 @@ class ModelBuilder:
             # Dense Layer 1
             dense1 = tf.layers.dense(inputs=pool_flat, units=32, activation=tf.nn.relu)
 
-        """with tf.variable_scope('dropout1', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('dropout1', reuse=tf.AUTO_REUSE):
             # Dropout Layer 1
-            dropout1 = tf.layers.dropout(inputs=dense1, rate=0.0)"""
+            dropout1 = tf.layers.dropout(inputs=dense1, rate=self.dropout1_rate, training=self.should_drop)
 
-        with tf.variable_scope('dense_2', reuse=tf.AUTO_REUSE):
+        """with tf.variable_scope('dense_2', reuse=tf.AUTO_REUSE):
             # Dense Layer 2
-            dense2 = tf.layers.dense(inputs=dense1, units=16, activation=tf.nn.relu)
+            dense2 = tf.layers.dense(inputs=dropout1, units=16, activation=tf.nn.relu)"""
 
         with tf.variable_scope('dense_3', reuse=tf.AUTO_REUSE):
             # Dense Layer 3
-            dense3 = tf.layers.dense(inputs=dense2, units=8, activation=tf.nn.relu)
+            dense3 = tf.layers.dense(inputs=dropout1, units=8, activation=tf.nn.relu)
 
                         ###################################
                         ########## OUTPUT LOGITS ##########

@@ -37,10 +37,10 @@ with tf.variable_scope('model') as scope:
 trainer = TrainerOpt.TrainerOpt(logits, should_drop, dropout_rate1_placeholder, iterator, next_element, train_dataset, test_dataset)
 
 # Define hyper parameters and others 
-learning_rate = 0.0001
-epochs = 20
+learning_rate = 0.0005
+epochs = 30
 iterations = epochs*round(float(training_count)/batch_size)
-dropout_rate1 = 0.2
+dropout_rate1 = 0.3
 backup_folder = "models/"+"reference_model"    # folder in which save the model and other useful information 
 
 
