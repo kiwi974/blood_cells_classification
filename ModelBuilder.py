@@ -98,13 +98,13 @@ class ModelBuilder:
                 activation=tf.nn.relu
             )
 
-        """with tf.variable_scope('pool_3', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('pool_3', reuse=tf.AUTO_REUSE):
             # Pooling Layer 3
-            pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)"""
+            pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
 
         with tf.variable_scope('norm_3', reuse=tf.AUTO_REUSE):
             # Normalization Layer 3
-            norm3 = tf.nn.local_response_normalization(input=tf.to_float(conv3))
+            norm3 = tf.nn.local_response_normalization(input=tf.to_float(pool3))
 
                         ###########################################
                         ########## CONVOLUTIONAL LAYER 4 ##########
@@ -134,7 +134,7 @@ class ModelBuilder:
 
         with tf.variable_scope('pool_flat', reuse=tf.AUTO_REUSE):
             # Entry Flatten Layer 
-            pool_flat = tf.reshape(norm4, [-1, 30 * 40 * 8]) 
+            pool_flat = tf.reshape(norm4, [-1, 15 * 20 * 8]) 
 
                         ##################################
                         ########## DENSE LAYERS ##########

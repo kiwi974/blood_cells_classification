@@ -38,7 +38,7 @@ trainer = TrainerOpt.TrainerOpt(logits, should_drop, dropout_rate1_placeholder, 
 
 # Define hyper parameters and others 
 learning_rate = 0.0005
-epochs = 30
+epochs = 35
 iterations = epochs*round(float(training_count)/batch_size)
 dropout_rate1 = 0.3
 backup_folder = "models/"+"reference_model"    # folder in which save the model and other useful information 
