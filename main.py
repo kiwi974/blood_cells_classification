@@ -38,18 +38,18 @@ trainer = TrainerOpt.TrainerOpt(logits, should_drop, dropout_rate1_placeholder, 
 
 # Define hyper parameters and others 
 learning_rate = 0.0005
-epochs = 35
+epochs = 40
 iterations = epochs*round(float(training_count)/batch_size)
 dropout_rate1 = 0.3
 backup_folder = "models/"+"reference_model"    # folder in which save the model and other useful information 
 
 
-losses, accuracies_it, train_accuracies, test_accuracies = trainer.train(learning_rate, iterations, dropout_rate1, backup_folder)
+losses, accuracies_it, train_accuracies, test_accuracy = trainer.train(learning_rate, iterations, dropout_rate1, backup_folder)
 
 
 # Save the hyperparameters in a file
 hyperp_names = ",".join(['learning_rate', 'batch_size', 'nb_epochs', 'total_nb_iterations', 'dropout_rate1', 'loss', 'train_accuracy', 'test_accuracy'])
-hyperp = ",".join([str(learning_rate), str(batch_size), str(epochs), str(iterations), str(dropout_rate1), str(losses[-1]), str(train_accuracies[-1]), str(test_accuracies[-1])])
+hyperp = ",".join([str(learning_rate), str(batch_size), str(epochs), str(iterations), str(dropout_rate1), str(losses[-1]), str(train_accuracies[-1]), str(test_accuracy)])
 
 with open(backup_folder+'/hyper_parameters.txt', 'w+') as f:
     f.write(hyperp_names + '\n' + hyperp)
@@ -120,7 +120,7 @@ if (bs_exp):
 
 if (True):
     print("\nTraining accuracy: {:.3f}".format(train_accuracies[-1]))
-    print("Testing accuracy: {:.3f}\n".format(test_accuracies[-1]))
+    print("Testing accuracy: {:.3f}\n".format(test_accuracy))
 
     fig,ax = plt.subplots(figsize=(15,15))
     ax.plot(np.arange(iterations+1),losses)
@@ -132,7 +132,7 @@ if (True):
 
     fig,ax = plt.subplots(figsize=(15,15))
     ax.plot(np.arange(iterations+1), train_accuracies, label = 'Accuracy on training set')
-    ax.plot(accuracies_it, test_accuracies, label = 'Accuracy on testing set')
+    #ax.plot(accuracies_it, test_accuracies, label = 'Accuracy on testing set')
     ax.set_title('Blood Cells Recognition Accuracy (batch size : {0}, lr = {1})'.format(batch_size, learning_rate), fontsize=26)
     ax.set_xlabel('Iterations',fontsize=22)
     ax.set_ylabel('Accuracy', fontsize=22)

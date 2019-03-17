@@ -138,4 +138,4 @@ class TrainerOpt:
 
                 writer.close()
 
-        return losses, accuracies_it, train_accuracies, test_accuracies
+        return losses, accuracies_it, train_accuracies, avg_acc
