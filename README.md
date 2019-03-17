@@ -19,4 +19,4 @@ Original data can be found here : https://www.kaggle.com/paultimothymooney/blood
 Tensorflow GPU is used, with CUDA 9.0 and cuDNN 7.0.5. 
 
 ### Hardware : 
-Lenovo LEGION y530 with Nvidia GeForce GTX 1060 GPU. 
+Lenovo LEGION y530 with Nvidia GeForce GTX 1060 GPU. With the defalut model presented above, 1829MiB VRAM memory are required. 
