@@ -14,7 +14,8 @@ Original data can be found here : https://www.kaggle.com/paultimothymooney/blood
 
 # The Study 
 
-As explained above, this study is practical, and is supposed to allow to become more familiar with some deep learning notions. it mainly revolves around 4 questions : 
+As explained above, this study is practical, and is supposed to allow to become more familiar with some deep learning notions. it mainly revolves around 5 questions : 
+  - Can the model be simplified and achieve comparable performances ? 
   - What is the influence of the learning rate on both training and testing performances ? 
   - What is the influence of pooling on both training and testing performances ? 
   - What is the influence of dropping on both training and testing performances ? 
@@ -24,6 +25,10 @@ As explained above, this study is practical, and is supposed to allow to become 
 # The Default Model 
 
 The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing.   
+
+![reference_nn](https://user-images.githubusercontent.com/33846463/54516534-7549c380-495f-11e9-878d-e7706ca46eac.png)
+
+
 
 
 # Equipment 
