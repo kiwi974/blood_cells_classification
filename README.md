@@ -32,7 +32,7 @@ First, we can notice that this model learns 'too much'. It probably 'memorizes' 
 
 # Image Representation by the Default Autoencoder
 
-On the following figure, one can preview of the autoencoder used tranforms the input images (update coming soon with the code). 
+On the following figure, one can preview how the autoencoder used tranforms the input images (update coming soon with the code). 
 
 # Equipment 
 
