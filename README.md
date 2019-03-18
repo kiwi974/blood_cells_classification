@@ -26,9 +26,7 @@ As explained above, this study is practical, and is supposed to allow to become 
 
 The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing.   
 
-![reference_nn](https://user-images.githubusercontent.com/33846463/54516534-7549c380-495f-11e9-878d-e7706ca46eac.png)
-
-
+![reference_nn](https://user-images.githubusercontent.com/33846463/54516629-c5288a80-495f-11e9-97b1-573b3284b097.png)
 
 
 # Equipment 
