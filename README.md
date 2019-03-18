@@ -14,7 +14,7 @@ Original data can be found here : https://www.kaggle.com/paultimothymooney/blood
 
 # The Study 
 
-As explained above, this study is practical, and is supposed to allow to become more familiar with some deep learning notions. it mainly revolves around 5 questions : 
+As explained above, this study is practical, and is supposed to allow to become more familiar with some deep learning notions. It mainly revolves around 5 questions : 
   - Can the model be simplified and achieve comparable performances ? 
   - What is the influence of the learning rate on both training and testing performances ? 
   - What is the influence of pooling on both training and testing performances ? 
@@ -28,6 +28,8 @@ The default model which will be taken as reference for this study is given by it
 
 ![reference_nn](https://user-images.githubusercontent.com/33846463/54516629-c5288a80-495f-11e9-97b1-573b3284b097.png)
 
+First, we can notice that this model learn 'too much'. It probably 'memorizes' the images it sees, and do not generalize that much. This could be a first point on which to work for the following. 
+
 
 # Equipment 
 
@@ -35,4 +37,4 @@ The default model which will be taken as reference for this study is given by it
 Tensorflow GPU is used, with CUDA 9.0 and cuDNN 7.0.5. 
 
 ### Hardware : 
-Lenovo LEGION y530 with Nvidia GeForce GTX 1060 GPU. With the defalut model presented above, 1829 MiB VRAM memory are required. 
+Lenovo LEGION y530 with Nvidia GeForce GTX 1060 GPU. With the default model presented above, 1829 MiB of VRAM memory are required. 
