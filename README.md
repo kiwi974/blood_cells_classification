@@ -30,6 +30,9 @@ The default model which will be taken as reference for this study is given by it
 
 First, we can notice that this model learns 'too much'. It probably 'memorizes' the images it sees, and do not generalize that much. This could be a first point on which to work for the following. 
 
+# Image Representation by the Default Autoencoder
+
+On the following figure, one can preview of the autoencoder used tranforms the input images (update coming soon with the code). 
 
 # Equipment 
 
