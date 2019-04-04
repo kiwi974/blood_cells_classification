@@ -30,9 +30,10 @@ As explained above, this study is practical, and is supposed to allow to become 
 
 The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing for grayscaled images, and 90% for colored images.   
 
+(image below not up-to-date)
 ![reference_nn](https://user-images.githubusercontent.com/33846463/54516629-c5288a80-495f-11e9-97b1-573b3284b097.png)
 
-First, we can notice that this model learns 'too much'. It probably 'memorizes' the images it sees, and do not generalize that much. This could be a first point on which to work for the following. 
+In grayscale, we can notice that this model learns 'too much'. It probably 'memorizes' the images it sees, and do not generalize enough. This could be a first point on which to work for the following. 
 
 # Image Representation by the Default Autoencoder
 
