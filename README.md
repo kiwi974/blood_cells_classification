@@ -14,7 +14,7 @@ Original data can be found here : https://www.kaggle.com/paultimothymooney/blood
 
 # The branches
 
-The difference between the two branches mainly lies in the way memory is managed. One the master, data are loaded and pre-processed at runtime. On the other side, on the branch 'placeholder_version', data have been pre-processed and saved under a numpy binary format. This binary data are read at runtime. It speeds up the data loading, but it still requires a huge amount of memory. With the placeholder version, less than a half of the data are used, in grayscale, with a poor quality because of image resizing. The use of the TensorFlow Dataset framework allows to load all the images, in color, with a great quality, and without booking all the remaining memory on my GPU. 
+The difference between the two branches mainly lies in the way memory is managed. On the master, data are loaded and pre-processed at runtime. On the other side, on the branch 'placeholder_version', data have been pre-processed and saved under a numpy binary format. This binary data are read at runtime. It speeds up the data loading, but it still requires a huge amount of memory. With the placeholder version, less than a half of the data are used, in grayscale, with a poor quality because of image resizing. The use of the TensorFlow Dataset framework allows to load all the images, in color, with a great quality, and without booking all the remaining memory on my GPU. 
 
 # The Study 
 
