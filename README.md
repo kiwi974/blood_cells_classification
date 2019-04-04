@@ -14,7 +14,7 @@ Original data can be found here : https://www.kaggle.com/paultimothymooney/blood
 
 # The branches
 
-The differences between the two branches mainly lies in the way memory is managed. One the master, data are loaded and pre-processed at runtime. On the other side, on the branch 'placeholder_version', data have been pre-processed and saved under a numpy binary format. It speeds up the data loading, but it still requires a huge amount of memory. With the placeholder version, less than a half of the data are used, in grayscale, with a poor quality because of image resizing. The use of the TensorFlow Dataset framework allows to load all the images, in color, with a great quality, and without taking all the place on my GPU. 
+The difference between the two branches mainly lies in the way memory is managed. One the master, data are loaded and pre-processed at runtime. On the other side, on the branch 'placeholder_version', data have been pre-processed and saved under a numpy binary format. This binary data are read at runtime. It speeds up the data loading, but it still requires a huge amount of memory. With the placeholder version, less than a half of the data are used, in grayscale, with a poor quality because of image resizing. The use of the TensorFlow Dataset framework allows to load all the images, in color, with a great quality, and without booking all the remaining memory on my GPU. 
 
 # The Study 
 
@@ -28,7 +28,7 @@ As explained above, this study is practical, and is supposed to allow to become 
   
 # The Default Model 
 
-The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing.   
+The default model which will be taken as reference for this study is given by its tensorflow representation. It achieves 100% of accuracy on training, while reaching about 65% on testing for grayscaled images, and 90% for colored images.   
 
 ![reference_nn](https://user-images.githubusercontent.com/33846463/54516629-c5288a80-495f-11e9-97b1-573b3284b097.png)
 
