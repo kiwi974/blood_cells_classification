@@ -45,4 +45,4 @@ On the following figure, one can preview how the autoencoder used tranforms the 
 Tensorflow GPU is used, with CUDA 9.0 and cuDNN 7.0.5. 
 
 ### Hardware : 
-Lenovo LEGION y530 with Nvidia GeForce GTX 1060 GPU. With the default model presented above, 1829 MiB of VRAM memory are required. 
+Lenovo LEGION y530 with a Nvidia GeForce GTX 1060 GPU. With the default model presented above, around 1800 MiB of VRAM memory are required for grayscaled images, and around 3400 MiB for colored images. 
