@@ -6,11 +6,14 @@ An attempt to build and train a model able to perform a classification on blood 
 
 Original data can be found here : https://www.kaggle.com/paultimothymooney/blood-cells. Data are images of 4 different types of blood cells : NEUTROPHIL, MONOCYTE, EOSINOPHILE, LYMPHOCYTE. Their frequencies distributions as well as their aspect are shown on the two following figures. 
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33846463/54499553-72c17c80-4913-11e9-8afd-88db67dac0fc.png" width="600" height="600">
+</p>
 
-![labels_frequencies](https://user-images.githubusercontent.com/33846463/54499553-72c17c80-4913-11e9-8afd-88db67dac0fc.png)
+<p align="center">
+  <img src=https://user-images.githubusercontent.com/33846463/54499554-7a812100-4913-11e9-9d5b-31063404d06f.png>
+</p>
 
-
-![classes](https://user-images.githubusercontent.com/33846463/54499554-7a812100-4913-11e9-9d5b-31063404d06f.png)
 
 # The branches
 
@@ -39,11 +42,13 @@ Above the training and validation curves, as weel as loss functions, for the def
 
 #### For colored images
 
-![training_accuracy](https://user-images.githubusercontent.com/33846463/55686085-7a49d380-595d-11e9-9e99-c42891627e37.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33846463/55686085-7a49d380-595d-11e9-9e99-c42891627e37.png" width="600" height="600">
+</p>
 
-![loss](https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png)
-
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png" width="600" height="600">
+</p>
 # Image Representation by the Default Autoencoder
 
 On the following figure, one can preview how the autoencoder used tranforms the input images (update coming soon with the code). 
