@@ -49,6 +49,8 @@ Above the training and validation curves, as weel as loss functions, for the def
 <p align="center">
   <img src="https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png" width="600" height="600">
 </p>
+
+
 # Image Representation by the Default Autoencoder
 
 On the following figure, one can preview how the autoencoder used tranforms the input images (update coming soon with the code). 
