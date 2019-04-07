@@ -37,6 +37,8 @@ In grayscale, we can notice that this model learns 'too much'. It probably 'memo
 
 Above the training and validation curves, as weel as loss functions, for the default model trained on both grayscaled and colored images. 
 
+#### For colored images
+
 ![training_accuracy](https://user-images.githubusercontent.com/33846463/55686085-7a49d380-595d-11e9-9e99-c42891627e37.png)
 
 ![loss](https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png)
