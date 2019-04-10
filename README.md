@@ -70,7 +70,7 @@ For information purposes, I also trained and evaluated this model with colored i
 
 On the following figure, one can preview how the autoencoder used tranforms the input images (update coming soon with the code). 
 
-# Equipment 
+# The Equipment 
 
 ### Software : 
 Tensorflow GPU is used, with CUDA 9.0 and cuDNN 7.0.5. 
