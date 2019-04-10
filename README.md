@@ -43,13 +43,13 @@ Below the training and validation curves, as weel as loss functions, for the def
 ### For colored images
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/33846463/55686085-7a49d380-595d-11e9-9e99-c42891627e37.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png" width="420" height="420">
+<img src="https://user-images.githubusercontent.com/33846463/55686097-93528480-595d-11e9-9c75-f76200b88f66.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55686085-7a49d380-595d-11e9-9e99-c42891627e37.png" width="420" height="420">
 </p>
 
 ### For grayscaled images
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/33846463/55899521-4670e700-5bc5-11e9-8c9d-0924fe1d8d28.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55899524-47097d80-5bc5-11e9-85cb-5cc207bd8586.png" width="420" height="420">
+<img src="https://user-images.githubusercontent.com/33846463/55899524-47097d80-5bc5-11e9-85cb-5cc207bd8586.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55899521-4670e700-5bc5-11e9-8c9d-0924fe1d8d28.png" width="420" height="420"> 
 </p>
 
 ### Best model on grayscaled image
@@ -57,7 +57,7 @@ Below the training and validation curves, as weel as loss functions, for the def
 During previous researches, the best model found on grayscaled image reached the performances dipslayed by the following two graphs. 
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/33846463/55899601-89cb5580-5bc5-11e9-88c9-555695bfe0f1.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55899603-89cb5580-5bc5-11e9-8ca1-1166b5878356.png" width="420" height="420">
+<img src="https://user-images.githubusercontent.com/33846463/55899603-89cb5580-5bc5-11e9-8ca1-1166b5878356.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55899601-89cb5580-5bc5-11e9-88c9-555695bfe0f1.png" width="420" height="420"> 
 </p>
 
 # Image Representation by the Default Autoencoder
