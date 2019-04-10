@@ -60,6 +60,12 @@ During previous researches, the best model found on grayscaled image reached the
 <img src="https://user-images.githubusercontent.com/33846463/55899603-89cb5580-5bc5-11e9-8ca1-1166b5878356.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55899601-89cb5580-5bc5-11e9-88c9-555695bfe0f1.png" width="420" height="420"> 
 </p>
 
+For information purposes, I also trained and evaluated this model with colored images. As one can see, perfomances barely reach the performances of the reference model. Knowing that this model is more complex than the reference one, it seems that it is not interesting to continue with it. 
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33846463/55907783-fcddc780-5bd7-11e9-9edd-aadf842a893e.png" width="420" height="420"> <img src="https://user-images.githubusercontent.com/33846463/55907781-fc453100-5bd7-11e9-936b-b0bfa6dfa600.png" width="420" height="420"> 
+</p>
+
 # Image Representation by the Default Autoencoder
 
 On the following figure, one can preview how the autoencoder used tranforms the input images (update coming soon with the code). 
