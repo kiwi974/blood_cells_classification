@@ -38,7 +38,7 @@ The default model which will be taken as reference for this study is given by it
 
 In grayscale, we can notice that this model learns 'too much'. It probably 'memorizes' the images it sees, and do not generalize enough. This could be a first point on which to work for the following. 
 
-Above the training and validation curves, as weel as loss functions, for the default model trained on both grayscaled and colored images. 
+Below the training and validation curves, as weel as loss functions, for the default model trained on both grayscaled and colored images. 
 
 ### For colored images
 
